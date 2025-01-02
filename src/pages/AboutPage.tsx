@@ -86,7 +86,7 @@ export default function AboutPage() {
                   <div className="prose prose-lg text-gray-700">
                     <p>
                       I'm always open to interesting conversations and collaboration 
-                      opportunities. The best way to reach me is through email or Twitter.
+                      opportunities.  The best way to reach me is through email or Twitter.
                     </p>
                     <div className="flex items-center gap-2 text-gray-600 mt-4">
                       <Mail className="w-5 h-5" />
