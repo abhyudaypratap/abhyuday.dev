@@ -7,6 +7,12 @@ import headerimage from '../assets/images/harrachov_ski_slope.jpg';
 import profileimage from '../assets/images/abhyuday_profile_crop.jpeg';
 
 export default function AboutPage() {
+  const getEmail = () => {
+    const user = 'abhyuday.py';
+    const domain = 'gmail.com';
+    return `${user}@${domain}`;
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col">
@@ -91,12 +97,12 @@ export default function AboutPage() {
                     </p>
                     <div className="flex items-center gap-2 text-gray-600 mt-4">
                       <Mail className="w-5 h-5" />
-                      <a 
-                        href="mailto:abhyuday.py@gmail.com" 
-                        className="text-blue-600 hover:text-blue-800 transition-colors no-underline hover:underline"
+                      <button 
+                        onClick={() => window.location.href = `mailto:${getEmail()}`}
+                        className="text-blue-600 hover:text-blue-800 transition-colors no-underline hover:underline cursor-pointer bg-transparent border-none p-0 font-inherit"
                       >
-                        abhyuday.py@gmail.com
-                      </a>
+                        abhyuday[dot]py[at]gmail[dot]com
+                      </button>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 mt-4">
                       <TwitterIcon className="w-5 h-5" />

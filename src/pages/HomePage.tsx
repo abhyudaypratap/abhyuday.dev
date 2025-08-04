@@ -66,13 +66,13 @@ export default function HomePage() {
                   I love building products that create meaningful impact. When I'm not crafting 
                   digital experiences, you'll find me connecting with nature.
                 </p>
-                <Link 
+                {/* <Link 
                   to="/journey" 
                   className="inline-flex items-center gap-2 bg-white text-emerald-700 px-6 py-3 rounded-lg font-medium hover:bg-emerald-50 transition-colors"
                 >
                   View My Journey
                   <ArrowRight className="w-4 h-4" />
-                </Link>
+                </Link> */}
               </div>
               
               <div className="hidden lg:block flex-shrink-0">

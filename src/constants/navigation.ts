@@ -10,11 +10,6 @@ export const navItems = [
 
 export const socialLinks = [
   {
-    icon: 'Github',
-    href: 'https://github.com/abhyudaypratap',
-    label: 'GitHub',
-  },
-  {
     icon: 'Twitter',
     href: 'https://twitter.com/abhyudaypratap_',
     label: 'Twitter',
@@ -25,8 +20,13 @@ export const socialLinks = [
     label: 'LinkedIn',
   },
   {
+    icon: 'Github',
+    href: 'https://github.com/abhyudaypratap',
+    label: 'GitHub',
+  },
+  {
     icon: 'Goodreads',
     href: 'https://www.goodreads.com/abhyudaypratap',
     label: 'Goodreads',
-  }
+  },
 ];
