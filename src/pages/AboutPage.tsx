@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import PageTransition from '../components/transitions/PageTransition';
 import Footer from '../components/Footer';
-import { Mail, MapPin, Twitter } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
+import { TwitterIcon } from '../components/Navigation/SocialIcons';
 import headerimage from '../assets/images/harrachov_ski_slope.jpg';
 import profileimage from '../assets/images/abhyuday_profile_crop.jpeg';
 
@@ -98,7 +99,7 @@ export default function AboutPage() {
                       </a>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 mt-4">
-                      <Twitter className="w-5 h-5" />
+                      <TwitterIcon className="w-5 h-5" />
                       <a 
                         href="https://twitter.com/abhyudaypratap_" 
                         className="text-blue-600 hover:text-blue-800 transition-colors no-underline hover:underline"

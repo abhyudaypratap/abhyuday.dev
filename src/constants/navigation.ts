@@ -1,3 +1,5 @@
+import { i } from "framer-motion/client";
+
 export const navItems = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
@@ -23,8 +25,8 @@ export const socialLinks = [
     label: 'LinkedIn',
   },
   {
-    icon: 'Instagram',
-    href: 'https://instagram.com/abhyudaypratap',
-    label: 'Instagram',
-  },
+    icon: 'Goodreads',
+    href: 'https://www.goodreads.com/abhyudaypratap',
+    label: 'Goodreads',
+  }
 ];
