@@ -4,8 +4,8 @@ export const navItems = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/writing', label: 'Writing' },
-  { href: '/journey', label: 'Journey' },
-  { href: '/tech', label: 'Tech' },
+  // { href: '/journey', label: 'Journey' }, // Hidden - no content yet
+  // { href: '/tech', label: 'Tech' }, // Hidden - no content yet
 ];
 
 export const socialLinks = [

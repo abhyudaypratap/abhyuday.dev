@@ -1,4 +1,12 @@
-# Adventures in Europe: A Personal Journey
+---
+title: "Five years in Europe"
+date: "2025-06-10"
+category: "writing"
+tags: ["travel", "personal", "europe", "berlin"]
+excerpt: "From cobblestone streets to ultra-modern cities, my journey through Europe and finding home in Berlin."
+---
+
+# Five years in Europe
 
 As I reflect on my experiences exploring Europe, I'm struck by the incredible diversity of cultures, histories, and landscapes that make this continent so fascinating. From the cobblestone streets of old towns to the ultra-modern cities, each destination has its own unique story to tell.
 

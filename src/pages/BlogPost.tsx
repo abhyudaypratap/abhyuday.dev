@@ -4,8 +4,9 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-import { techPosts } from '../data/tech/posts';
-import { writingPosts } from '../data/writing/posts';
+import { useState, useEffect } from 'react';
+import { loadBlogPosts, BlogPostMeta } from '../utils/blogLoader';
+import { loadMarkdownContent } from '../utils/loadMarkdown';
 import PageTransition from '../components/transitions/PageTransition';
 import Footer from '../components/Footer';
 
@@ -15,11 +16,63 @@ interface BlogPostProps {
 
 export default function BlogPost({ type }: BlogPostProps) {
   const { slug } = useParams();
-  const posts = type === 'writing' ? writingPosts : techPosts;
-  const post = posts.find(p => p.title.toLowerCase().replace(/\s+/g, '-') === slug);
+  const [content, setContent] = useState<string>('');
+  const [post, setPost] = useState<BlogPostMeta | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    setLoading(true);
+    try {
+      // Synchronously load all posts to find the metadata for the current one
+      const allPosts = loadBlogPosts(type);
+      const foundPost = allPosts.find(p => p.slug === slug);
+      
+      if (foundPost) {
+        setPost(foundPost);
+        
+        // Synchronously load the markdown content
+        const markdownResult = loadMarkdownContent(type, slug);
+        if (markdownResult) {
+          setContent(markdownResult.content);
+        } else {
+          setContent(''); // Clear content if loading fails
+        }
+      } else {
+        setPost(null); // Clear post if not found
+      }
+    } catch (error) {
+      // Error loading post data
+    } finally {
+      setLoading(false);
+    }
+  }, [slug, type]);
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   if (!post) {
-    return <div>Post not found</div>;
+    return (
+      <PageTransition>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Post Not Found</h1>
+            <p className="text-gray-600">The requested blog post could not be found.</p>
+          </div>
+        </div>
+      </PageTransition>
+    );
   }
 
   return (
@@ -35,7 +88,32 @@ export default function BlogPost({ type }: BlogPostProps) {
               <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-8">
                 {post.icon}
               </div>
-              <h1 className="text-5xl font-bold mb-4">{post.title}</h1>
+              <h1 className="text-5xl font-bold mb-6">{post.title}</h1>
+              
+              {/* Date and tags */}
+              <div className="flex flex-wrap items-center gap-4 text-white/80">
+                <time className="text-lg">
+                  {new Date(post.date).toLocaleDateString('en-US', { 
+                    year: 'numeric',
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </time>
+                
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-white/60">•</span>
+                    {post.tags.map((tag) => (
+                      <span 
+                        key={tag}
+                        className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
 
@@ -49,14 +127,14 @@ export default function BlogPost({ type }: BlogPostProps) {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  code({ node, inline, className, children, ...props }) {
+                  code(props) {
+                    const { children, className } = props;
                     const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
+                    return match ? (
                       <SyntaxHighlighter
                         style={vscDarkPlus}
                         language={match[1]}
                         PreTag="div"
-                        {...props}
                       >
                         {String(children).replace(/\n$/, '')}
                       </SyntaxHighlighter>
@@ -68,7 +146,7 @@ export default function BlogPost({ type }: BlogPostProps) {
                   },
                 }}
               >
-                {post.content}
+                {content}
               </ReactMarkdown>
             </motion.article>
           </div>

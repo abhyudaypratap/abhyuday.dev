@@ -1,3 +1,11 @@
+---
+title: "Creating Interactive 3D Globes with Three.js"
+date: "2024-02-10"
+category: "tech"
+tags: ["threejs", "3d", "react", "visualization"]
+excerpt: "Build stunning 3D visualizations for your web applications using Three.js and React."
+---
+
 # Building a 3D Globe with Three.js and React
 
 Three.js opens up a world of possibilities for creating immersive 3D experiences on the web. Let's explore how to build an interactive globe visualization.
