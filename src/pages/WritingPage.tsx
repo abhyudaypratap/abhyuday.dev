@@ -1,142 +1,100 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { loadBlogPosts, BlogPostMeta } from '../utils/blogLoader';
+import { Link, useSearchParams } from 'react-router-dom';
 import PageTransition from '../components/transitions/PageTransition';
-import BlogHeader from '../components/blog/BlogHeader';
 import Footer from '../components/Footer';
+import { SECTIONS, Section, formatDate, getPosts } from '../lib/posts';
 
-const cardVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: (index: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: index * 0.1,
-      duration: 0.5,
-    },
-  }),
-};
+const chip = (active: boolean) =>
+  `px-3 py-1 rounded-full text-sm border transition-colors ${
+    active
+      ? 'bg-gray-900 border-gray-900 text-white'
+      : 'bg-white border-gray-300 text-gray-600 hover:border-gray-500'
+  }`;
 
 export default function WritingPage() {
-  const [writingPosts, setWritingPosts] = useState<BlogPostMeta[]>([]);
-  const [loading, setLoading] = useState(true);
+  const posts = getPosts();
+  const [params, setParams] = useSearchParams();
 
-  useEffect(() => {
-    const fetchPosts = () => {
-      try {
-        const posts = loadBlogPosts('writing');
-        setWritingPosts(posts);
-      } catch (error) {
-        // Error loading writing posts
-      } finally {
-        setLoading(false);
-      }
-    };
+  const section = SECTIONS.find((s) => s.id === params.get('section'))?.id as Section | undefined;
+  const activeTag = params.get('tag') ?? undefined;
 
-    fetchPosts();
-  }, []);
+  const allTags = Array.from(new Set(posts.flatMap((p) => p.tags))).sort();
 
-  // Group posts by year
-  const postsByYear = writingPosts.reduce((acc, post) => {
-    const year = post.year;
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(post);
-    return acc;
-  }, {} as Record<number, BlogPostMeta[]>);
+  const update = (key: 'section' | 'tag', value?: string) => {
+    const next = new URLSearchParams(params);
+    if (value && next.get(key) !== value) next.set(key, value);
+    else next.delete(key);
+    setParams(next, { replace: true });
+  };
 
-  // Sort years in descending order
-  const sortedYears = Object.keys(postsByYear)
-    .map(Number)
-    .sort((a, b) => b - a);
+  const visible = posts.filter(
+    (p) => (!section || p.section === section) && (!activeTag || p.tags.includes(activeTag))
+  );
 
-  if (loading) {
-    return (
-      <PageTransition>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading posts...</p>
-          </div>
-        </div>
-      </PageTransition>
-    );
-  }
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col">
         <div className="flex-grow">
-          <BlogHeader title="Thoughts on Life" color="bg-rose-600" />
-          
-          <div className="bg-white">
-            <div className="max-w-6xl mx-auto px-8 py-24">
-              {sortedYears.map((year, yearIndex) => (
-                <div key={year} className="mb-16">
-                  <motion.h2 
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: yearIndex * 0.1 }}
-                    className="text-3xl font-bold text-gray-900 mb-8 border-b-2 border-rose-600 pb-2"
-                  >
-                    {year}
-                  </motion.h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {postsByYear[year].map((post, index) => (
-                      <Link key={post.slug} to={`/writing/${post.slug}`}>
-                        <motion.div
-                          custom={yearIndex * 10 + index}
-                          variants={cardVariants}
-                          initial="initial"
-                          whileInView="animate"
-                          viewport={{ once: true }}
-                          whileHover={{ scale: 1.02, y: -5 }}
-                          className={`${post.color} rounded-xl p-8 h-80 flex flex-col items-center justify-center text-center text-white transition-all duration-300 shadow-lg hover:shadow-xl`}
-                        >
-                          <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
-                            {post.icon}
-                          </div>
-                          <h3 className="text-2xl font-semibold leading-tight mb-3">{post.title}</h3>
-                          <p className="text-sm opacity-90 mb-4">{new Date(post.date).toLocaleDateString('en-US', { 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}</p>
-                          {post.tags && post.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 justify-center">
-                              {post.tags.slice(0, 2).map((tag) => (
-                                <span 
-                                  key={tag}
-                                  className="px-2 py-1 bg-white/20 rounded-full text-xs"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                              {post.tags.length > 2 && (
-                                <span className="px-2 py-1 bg-white/20 rounded-full text-xs">
-                                  +{post.tags.length - 2}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </motion.div>
-                      </Link>
+          <div className="max-w-3xl mx-auto px-8 py-16">
+            <h1 className="text-4xl font-bold text-gray-900 mb-8">Writing</h1>
+
+            {posts.length > 0 && (
+              <div className="mb-10 space-y-4">
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Sections">
+                  <button className={chip(!section)} onClick={() => update('section')}>
+                    All
+                  </button>
+                  {SECTIONS.map((s) => (
+                    <button key={s.id} className={chip(section === s.id)} onClick={() => update('section', s.id)}>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+                {allTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Tags">
+                    {allTags.map((tag) => (
+                      <button
+                        key={tag}
+                        className={`${chip(activeTag === tag)} text-xs`}
+                        onClick={() => update('tag', tag)}
+                      >
+                        #{tag}
+                      </button>
                     ))}
                   </div>
-                </div>
-              ))}
-              
-              {writingPosts.length === 0 && (
-                <div className="text-center text-gray-600 py-16">
-                  <p className="text-xl">No posts found.</p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
+
+            {visible.length === 0 ? (
+              <p className="text-gray-500">
+                {posts.length === 0 ? 'Nothing here yet.' : 'No posts match these filters.'}
+              </p>
+            ) : (
+              <ul className="divide-y divide-gray-200">
+                {visible.map((post) => (
+                  <li key={post.slug}>
+                    <Link to={`/writing/${post.slug}`} className="block py-6 group">
+                      <div className="flex items-center gap-3 text-sm text-gray-500 mb-1">
+                        <time dateTime={post.date}>{formatDate(post.date)}</time>
+                        <span>•</span>
+                        <span className="capitalize">{post.section}</span>
+                        <span>•</span>
+                        <span>{post.readingMinutes} min read</span>
+                      </div>
+                      <h2 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </h2>
+                      {post.excerpt && <p className="text-gray-600 mt-1">{post.excerpt}</p>}
+                      {post.tags.length > 0 && (
+                        <p className="text-xs text-gray-500 mt-2">{post.tags.map((t) => `#${t}`).join('  ')}</p>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
-
         <Footer />
       </div>
     </PageTransition>

@@ -5,9 +5,7 @@ import { useNavigationStore } from '../../stores/navigationStore';
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/writing', label: 'Writing' },
   { href: '/journey', label: 'Journey' },
-  { href: '/tech', label: 'Tech' },
 ];
 
 export default function Sidebar() {
