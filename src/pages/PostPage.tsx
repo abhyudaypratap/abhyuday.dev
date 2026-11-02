@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ArrowLeft } from 'lucide-react';
@@ -53,7 +54,7 @@ export default function PostPage({ collection = 'writing' }: { collection?: Coll
                 </div>
                 <div className="prose prose-lg max-w-none">
                   <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
                     components={{
                       code({ children, className }) {
                         const match = /language-(\w+)/.exec(className || '');
