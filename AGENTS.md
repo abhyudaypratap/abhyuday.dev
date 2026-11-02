@@ -28,6 +28,12 @@ Scripts: `npm run dev`, `npm run build` (vite build), `npm run lint`, `npm run p
 - Frontmatter: `title`, `date` (YYYY-MM-DD), `section` (`thoughts` | `tech`), `tags: [a, b]`, `excerpt`, `draft: true` (hidden in production).
 - The old blog (AI-generated posts, Tech page, old loaders) was removed on purpose. Do not add AI-generated posts; posts are the author's own writing.
 
+## Personal (`/personal`, unlisted)
+
+- Same components as Writing (`WritingPage`/`PostPage` with `collection="personal"`), configured in `COLLECTIONS` in `src/lib/posts.ts`. No section filter, tags only.
+- Posts live in `src/data/personal/*.md` (same frontmatter; `section` is ignored).
+- Intentionally not in `navItems`; reachable by direct link only.
+
 ## Layout and styling notes
 
 - Shared page shell: `PageTransition` (`components/transitions/PageTransition.tsx`), the page body, then `Footer`.

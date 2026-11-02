@@ -6,11 +6,12 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ArrowLeft } from 'lucide-react';
 import PageTransition from '../components/transitions/PageTransition';
 import Footer from '../components/Footer';
-import { formatDate, getPost } from '../lib/posts';
+import { COLLECTIONS, Collection, formatDate, getPost } from '../lib/posts';
 
-export default function PostPage() {
+export default function PostPage({ collection = 'writing' }: { collection?: Collection }) {
+  const { backLabel, basePath, showSections } = COLLECTIONS[collection];
   const { slug } = useParams();
-  const post = slug ? getPost(slug) : undefined;
+  const post = slug ? getPost(slug, collection) : undefined;
 
   return (
     <PageTransition>
@@ -18,10 +19,10 @@ export default function PostPage() {
         <div className="flex-grow">
           <div className="max-w-3xl mx-auto px-8 py-16">
             <Link
-              to="/writing"
+              to={basePath}
               className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600 mb-8"
             >
-              <ArrowLeft className="w-4 h-4" /> All writing
+              <ArrowLeft className="w-4 h-4" /> {backLabel}
             </Link>
 
             {!post ? (
@@ -34,14 +35,18 @@ export default function PostPage() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-3">{post.title}</h1>
                 <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-10">
                   <time dateTime={post.date}>{formatDate(post.date)}</time>
-                  <span>•</span>
-                  <Link to={`/writing?section=${post.section}`} className="capitalize hover:text-blue-600">
-                    {post.section}
-                  </Link>
+                  {showSections && (
+                    <>
+                      <span>•</span>
+                      <Link to={`${basePath}?section=${post.section}`} className="capitalize hover:text-blue-600">
+                        {post.section}
+                      </Link>
+                    </>
+                  )}
                   <span>•</span>
                   <span>{post.readingMinutes} min read</span>
                   {post.tags.map((tag) => (
-                    <Link key={tag} to={`/writing?tag=${encodeURIComponent(tag)}`} className="hover:text-blue-600">
+                    <Link key={tag} to={`${basePath}?tag=${encodeURIComponent(tag)}`} className="hover:text-blue-600">
                       #{tag}
                     </Link>
                   ))}

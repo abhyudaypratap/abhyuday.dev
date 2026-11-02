@@ -17,6 +17,8 @@ export default function AnimatedRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/writing" element={<WritingPage />} />
         <Route path="/writing/:slug" element={<PostPage />} />
+        <Route path="/personal" element={<WritingPage collection="personal" />} />
+        <Route path="/personal/:slug" element={<PostPage collection="personal" />} />
         <Route path="/journey" element={<JourneyPage />} />
         <Route path="/journey/:year" element={<YearOverview />} />
       </Routes>

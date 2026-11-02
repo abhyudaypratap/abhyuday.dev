@@ -16,11 +16,21 @@ export const SECTIONS: { id: Section; label: string }[] = [
   { id: 'tech', label: 'Tech' },
 ];
 
-const modules = import.meta.glob('../data/posts/*.md', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-}) as Record<string, string>;
+export type Collection = 'writing' | 'personal';
+
+export const COLLECTIONS: Record<
+  Collection,
+  { title: string; basePath: string; backLabel: string; showSections: boolean }
+> = {
+  writing: { title: 'Writing', basePath: '/writing', backLabel: 'All writing', showSections: true },
+  personal: { title: 'Personal', basePath: '/personal', backLabel: 'All personal posts', showSections: false },
+};
+
+// import.meta.glob only accepts literal patterns, so each collection needs its own call
+const sources: Record<Collection, Record<string, string>> = {
+  writing: import.meta.glob<string>('../data/posts/*.md', { eager: true, query: '?raw', import: 'default' }),
+  personal: import.meta.glob<string>('../data/personal/*.md', { eager: true, query: '?raw', import: 'default' }),
+};
 
 // Supports `key: value` lines and inline arrays like tags: [a, b]
 function parseFrontmatter(raw: string): { data: Record<string, string | string[]>; body: string } {
@@ -50,7 +60,7 @@ function parseFrontmatter(raw: string): { data: Record<string, string | string[]
 const toSlug = (path: string) =>
   (path.split('/').pop() ?? '').replace(/\.md$/, '').replace(/_/g, '-');
 
-function buildPosts(): Post[] {
+function buildPosts(modules: Record<string, string>): Post[] {
   const posts: Post[] = [];
 
   for (const [path, raw] of Object.entries(modules)) {
@@ -77,10 +87,14 @@ function buildPosts(): Post[] {
   return posts.sort((a, b) => b.date.localeCompare(a.date));
 }
 
-const posts = buildPosts();
+const postsByCollection: Record<Collection, Post[]> = {
+  writing: buildPosts(sources.writing),
+  personal: buildPosts(sources.personal),
+};
 
-export const getPosts = (): Post[] => posts;
-export const getPost = (slug: string): Post | undefined => posts.find((p) => p.slug === slug);
+export const getPosts = (collection: Collection = 'writing'): Post[] => postsByCollection[collection];
+export const getPost = (slug: string, collection: Collection = 'writing'): Post | undefined =>
+  postsByCollection[collection].find((p) => p.slug === slug);
 
 export const formatDate = (date: string): string => {
   const d = new Date(date);
